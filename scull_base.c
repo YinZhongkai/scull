@@ -7,6 +7,7 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/uaccess.h>
+#include "scull.h"
 
 #define SCULL_QUANTUM 		4096
 #define SCULL_QSET 		1000
@@ -72,7 +73,7 @@ static struct scull_qset *scull_follow(struct scull_dev *dev, int item)
 	struct scull_qset *dptr;
 
 	if (dev == NULL || item < 0) {
-		printk(KERN_ERR "invalid param\n");
+		PDEBUG(KERN_ERR "invalid param\n");
 		return NULL;
 	}
 
@@ -81,7 +82,7 @@ static struct scull_qset *scull_follow(struct scull_dev *dev, int item)
 		dptr = dev->data = kmalloc(sizeof(struct scull_qset),
 								GFP_KERNEL);
 		if (dptr == NULL) {
-			printk(KERN_ERR "kmlloc failed\n");
+			PDEBUG(KERN_ERR "kmlloc failed\n");
 			return NULL;
 		}
 		memset(dptr, 0, sizeof(struct scull_qset));
@@ -92,7 +93,7 @@ static struct scull_qset *scull_follow(struct scull_dev *dev, int item)
 			dptr->next = kmalloc(sizeof(struct scull_qset),
 								GFP_KERNEL);
 			if (!dptr->next) {
-				printk(KERN_ERR "kmlloc failed\n");
+				PDEBUG(KERN_ERR "kmlloc failed\n");
 				return NULL;
 			}
 			memset(dptr->next, 0, sizeof(struct scull_qset));
@@ -235,7 +236,7 @@ static struct file_operations scull_fops = {
 static int scull_init_cdev(struct scull_dev *dev)
 {
 	if (dev == NULL) {
-		printk(KERN_ERR "invalid param\n");
+		PDEBUG(KERN_ERR "invalid param\n");
 		return -1;
 	}
 
@@ -252,7 +253,7 @@ static int __init scull_init(void)
 
 	g_scull_dev = kmalloc(sizeof(struct scull_dev), GFP_KERNEL);
 	if (g_scull_dev == NULL) {
-		printk(KERN_ERR "kmalloc failed\n");
+		PDEBUG(KERN_ERR "kmalloc failed\n");
 		return -ENOMEM;
 	}
 	memset(g_scull_dev, 0, sizeof(struct scull_dev));
@@ -261,7 +262,7 @@ static int __init scull_init(void)
 
 	g_scull_dev->scull_class = class_create(THIS_MODULE, SCULL_CLASS_NAME);
 	if (IS_ERR(g_scull_dev->scull_class)) {
-		printk(KERN_ERR "class_create failed\n");
+		PDEBUG(KERN_ERR "class_create failed\n");
 		ret = PTR_ERR(g_scull_dev->scull_class);
 		goto class_create_err;
 	}
@@ -269,7 +270,7 @@ static int __init scull_init(void)
 	ret = alloc_chrdev_region(&g_scull_dev->dev_no, 0,
 					SCULL_DEVICE_NUM, SCULL_DEVICE_NAME);
 	if (ret != 0) {
-		printk(KERN_ERR "alloc_chrdev_region failed\n");
+		PDEBUG(KERN_ERR "alloc_chrdev_region failed\n");
 		goto alloc_chrdev_region_err;
 	}
 
@@ -277,7 +278,7 @@ static int __init scull_init(void)
 
 	ret = cdev_add(&g_scull_dev->dev, g_scull_dev->dev_no, SCULL_DEVICE_NUM);
 	if (ret != 0) {
-		printk(KERN_ERR "cdev_add failed\n");
+		PDEBUG(KERN_ERR "cdev_add failed\n");
 		goto cdev_add_err;
 	}
 

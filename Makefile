@@ -1,15 +1,9 @@
-obj-m := scull-z.o
-scull-z-objs := scull.o
+obj-m := scull-base.o
+scull-base-objs := scull_base.o
 
-INDEX_FILES :=
-
-.PHONY: all clean tags cscope cxx_files hpp_files
+.PHONY: all clean
 all:
 	$(MAKE) -C $(SRC_KERNEL_DIR) M=$(PWD) modules
-
-tags: cxx_files hpp_files
-
-cscope: cxx_files hpp_files
 
 clean:
 	rm -rf .*.cmd *.o modules.order *.ko Module.symvers *.mod.*
